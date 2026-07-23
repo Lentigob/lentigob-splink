@@ -1,8 +1,8 @@
 """
-blocking_rule_library_py.py
+blocking_rule_library_custom.py
 
 Módulo complementario a splink.blocking_rule_library, para reglas de
-bloqueo definidas por la usuaria con lógica escrita en Python.
+bloqueo definidas por la usuaria en Python.
 
 NOTA: Splink siempre ejecuta las reglas de bloqueo como SQL contra DuckDB
 (u otro backend elegido por la usuaria). Este módulo no sustituye lo anterior, sólo
@@ -22,17 +22,19 @@ Modo "FDU (Función Definida por la Usuaria)":
 
 Uso:
     # Modo pandas
-    from blocking_rule_library_py import block_on_sin_acentos
+    from blocking_rule_library_custom import block_on_sin_acentos
 
     df, regla = block_on_sin_acentos(df, "nombre")
     settings = SettingsCreator(
         blocking_rules_to_generate_predictions=[regla],
         ...
     )
-    linker = Linker(df, settings, db_api=DuckDBAPI())
+    db_api = DuckDBAPI()
+    splink_df = db_api.register(df, table_name="personas")
+    linker = Linker(splink_df, settings)
 
-    # Modalidad FDU
-    from blocking_rule_library_py import registrar_fdu_sin_acentos
+    # Modo FDU
+    from blocking_rule_library_custom import registrar_fdu_sin_acentos
     import duckdb
 
     con = duckdb.connect("mi_bd.duckdb")
@@ -41,7 +43,9 @@ Uso:
         blocking_rules_to_generate_predictions=[regla],
         ...
     )
-    linker = Linker("personas", settings, db_api=DuckDBAPI(connection=con))
+    db_api = DuckDBAPI(connection=con)
+    splink_df = db_api.register("personas", table_name="personas")
+    linker = Linker(splink_df, settings)
 """
 
 import unicodedata
@@ -49,12 +53,12 @@ import pandas as pd
 
 
 # ---------------------------------------------------------------------
-# Lógica base compartida por ambas modalidades
+# Base para ambos modos
 # ---------------------------------------------------------------------
 
 def quitar_acentos(texto):
     """
-    Quita acentos y diacríticos de un string.
+    Quita acentos y diacríticos de una cadena de texto.
     Compatible tanto con pandas (.apply) como con DuckDB (create_function),
     ya que solo recibe y regresa un valor escalar.
     """
@@ -66,7 +70,7 @@ def quitar_acentos(texto):
 
 
 def _normalizar_serie(serie):
-    """Aplica quitar_acentos + mayúsculas + strip a una columna de pandas."""
+    """Aplica quitar_acentos + dejar mayúsculas + strip a una columna de pandas."""
     return (
         serie.apply(quitar_acentos)
         .str.upper()
@@ -75,7 +79,7 @@ def _normalizar_serie(serie):
 
 
 # ---------------------------------------------------------------------
-# MODALIDAD 1: pandas (precálculo)
+# Modo pandas
 # ---------------------------------------------------------------------
 
 def block_on_sin_acentos(df, columna):
@@ -104,7 +108,7 @@ def block_on_sin_acentos(df, columna):
 
 
 # ---------------------------------------------------------------------
-# Modo 2: FDU en DuckDB
+# Modo FDU en DuckDB
 # ---------------------------------------------------------------------
 
 def registrar_fdu_sin_acentos(con, columna, nombre_fdu="quitar_acentos_fdu"):
@@ -115,18 +119,17 @@ def registrar_fdu_sin_acentos(con, columna, nombre_fdu="quitar_acentos_fdu"):
     Parámetros
     ----------
     con : duckdb.DuckDBPyConnection
-        Conexión activa de DuckDB (la misma que usarás en DuckDBAPI(connection=con)).
+        Conexión activa de DuckDB (la misma que se usa en DuckDBAPI(connection=con)).
     columna : str
         Nombre de la columna sobre la que se aplicará la fdu (ej. 'nombre').
     nombre_fdu : str
-        Nombre que tendrá la función dentro de DuckDB. Cambialo si ya
-        existe una función con ese nombre en tu conexión.
+        Nombre que tendrá la función dentro de DuckDB.
 
     Regresa
     -------
     regla_sql : str
     """
-    # evitar registrar dos veces la misma FDU si ya existe
+    # No usar nombres de funciones ya existentes en la conexión de DuckDB
     funciones_existentes = con.execute(
         "SELECT function_name FROM duckdb_functions() WHERE function_name = ?",
         [nombre_fdu],
@@ -146,7 +149,7 @@ def registrar_fdu_sin_acentos(con, columna, nombre_fdu="quitar_acentos_fdu"):
 def get_regla_bloqueo_sin_acentos(columna, modo="pandas", df=None, con=None):
     """
     Punto de entrada único: según 'modo', arma la regla de bloqueo
-    usando la modalidad pandas o fdu.
+    usando el modo pandas o fdu.
 
     Parámetros
     ----------
@@ -182,8 +185,8 @@ def get_regla_bloqueo_sin_acentos(columna, modo="pandas", df=None, con=None):
 
 if __name__ == "__main__":
     import duckdb
-    from splink import Linker, SettingsCreator, DuckDBAPI
-    import splink.comparison_library as cl
+    from splink import DuckDBAPI
+    from splink.blocking_analysis import count_comparisons_from_blocking_rules
 
     data = {
         "unique_id": [1, 2, 3, 4],
@@ -191,32 +194,60 @@ if __name__ == "__main__":
     }
     df = pd.DataFrame(data)
 
-    # --- Modalidad pandas ---
+    # --- Modo pandas ---
     df_norm, regla_pandas = get_regla_bloqueo_sin_acentos(
         "nombre", modo="pandas", df=df
     )
     print("Regla (pandas):", regla_pandas)
     print(df_norm)
 
-    settings_pandas = SettingsCreator(
-        link_type="dedupe_only",
-        blocking_rules_to_generate_predictions=[regla_pandas],
-        comparisons=[cl.ExactMatch("nombre")],
-    )
-    linker_pandas = Linker(df_norm, settings_pandas, db_api=DuckDBAPI())
-    print(linker_pandas.inference.predict().as_pandas_dataframe())
+    db_api_pandas = DuckDBAPI()
 
-    # --- Modalidad FDU ---
+    splink_df_pandas = db_api_pandas.register(df_norm, table_name="personas_pandas")
+
+    conteo_pandas = count_comparisons_from_blocking_rules(
+        splink_df_pandas,
+        blocking_rules=regla_pandas,
+        link_type="dedupe_only",
+    )
+    print("Conteo de pares generados (pandas):", conteo_pandas)
+
+    con_pandas = db_api_pandas.duckdb_con
+    pares_pandas = con_pandas.execute(f"""
+        SELECT l.unique_id AS id_l, l.nombre AS nombre_l,
+               r.unique_id AS id_r, r.nombre AS nombre_r
+        FROM personas_pandas AS l
+        JOIN personas_pandas AS r
+          ON {regla_pandas}
+        WHERE l.unique_id < r.unique_id
+    """).df()
+    print("Pares encontrados (pandas):")
+    print(pares_pandas)
+
+    # --- Modo FDU ---
     con = duckdb.connect(":memory:")
     con.execute("CREATE TABLE personas AS SELECT * FROM df")
 
     regla_fdu = get_regla_bloqueo_sin_acentos("nombre", modo="fdu", con=con)
     print("Regla (fdu):", regla_fdu)
 
-    settings_fdu = SettingsCreator(
+    db_api_fdu = DuckDBAPI(connection=con)
+    splink_df_fdu = db_api_fdu.register("personas", table_name="personas")
+
+    conteo_fdu = count_comparisons_from_blocking_rules(
+        splink_df_fdu,
+        blocking_rules=regla_fdu,
         link_type="dedupe_only",
-        blocking_rules_to_generate_predictions=[regla_fdu],
-        comparisons=[cl.ExactMatch("nombre")],
     )
-    linker_fdu = Linker("personas", settings_fdu, db_api=DuckDBAPI(connection=con))
-    print(linker_fdu.inference.predict().as_pandas_dataframe())
+    print("Conteo de pares generados (fdu):", conteo_fdu)
+
+    pares_fdu = con.execute(f"""
+        SELECT l.unique_id AS id_l, l.nombre AS nombre_l,
+               r.unique_id AS id_r, r.nombre AS nombre_r
+        FROM personas AS l
+        JOIN personas AS r
+          ON {regla_fdu}
+        WHERE l.unique_id < r.unique_id
+    """).df()
+    print("Pares encontrados (fdu):")
+    print(pares_fdu)
