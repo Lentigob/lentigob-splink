@@ -1,5 +1,5 @@
 """
-py_blocking_rule_library.py
+blocking_rule_library_py.py
 
 Módulo complementario a splink.blocking_rule_library, para reglas de
 bloqueo definidas por la usuaria con lógica escrita en Python.
