@@ -58,15 +58,29 @@ import pandas as pd
 
 def quitar_acentos(texto):
     """
-    Quita acentos y diacríticos de una cadena de texto.
+    Quita acentos y diacríticos de una cadena de texto, preservando la
+    ñ/Ñ como letra propia (no como "n con tilde").
     Compatible tanto con pandas (.apply) como con DuckDB (create_function),
     ya que solo recibe y regresa un valor escalar.
     """
     if texto is None or (isinstance(texto, float) and pd.isna(texto)):
         return texto
     texto = str(texto)
+
+    # Protegemos la ñ/Ñ antes de normalizar, porque NFKD la descompone
+    # en 'n' + tilde combinante, y esa tilde se perdería junto con los
+    # demás acentos si no la aislamos primero.
+    texto = texto.replace('ñ', '\ufffd1').replace('Ñ', '\ufffd2')
+
     texto_normalizado = unicodedata.normalize('NFKD', texto)
-    return ''.join(c for c in texto_normalizado if not unicodedata.combining(c))
+    texto_sin_acentos = ''.join(
+        c for c in texto_normalizado if not unicodedata.combining(c)
+    )
+
+    # Regresamos la ñ/Ñ a su forma original.
+    texto_sin_acentos = texto_sin_acentos.replace('\ufffd1', 'ñ').replace('\ufffd2', 'Ñ')
+
+    return texto_sin_acentos
 
 
 def _normalizar_serie(serie):
@@ -187,12 +201,20 @@ if __name__ == "__main__":
     import duckdb
     from splink import DuckDBAPI
     from splink.blocking_analysis import count_comparisons_from_blocking_rules
+    from pathlib import Path
 
-    data = {
-        "unique_id": [1, 2, 3, 4],
-        "nombre": ["José Pérez", "jose perez", "María López", "Ana Ruiz"],
-    }
-    df = pd.DataFrame(data)
+    carpeta_actual = Path(__file__).parent
+
+    # data = {
+    #     "unique_id": [1, 2, 3, 4],
+    #     "nombre": ["José Pérez", "jose perez", "María López", "Ana Ruiz"],
+    # }
+    # df = pd.DataFrame(data)
+
+    df = pd.read_csv(carpeta_actual / 'INER_COVID19_Pacientes_DiagnosticoComorbilidad.csv')
+
+    # Añadir ID único porque sé que mi csv no lo tiene
+    df["unique_id"] = range(1, len(df) + 1)
 
     # --- Modo pandas ---
     df_norm, regla_pandas = get_regla_bloqueo_sin_acentos(
