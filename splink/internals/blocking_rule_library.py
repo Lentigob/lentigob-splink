@@ -99,6 +99,33 @@ class CustomRule(BlockingRuleCreator):
         return sql_condition
 
 
+class LevenshteinRuleEjemplo(BlockingRuleCreator):
+    def __init__(
+        self,
+        col_name: str,
+        threshold: int = 2,
+        arrays_to_explode: list[str] | None = None,
+    ):
+        """
+        Regla de bloqueo basada en la distancia de Levenshtein entre dos valores de una misma columna.
+        Dos registros se compararán si la distancia entre valores es menor o igual al threshold.
+
+        Args:
+            col_name (str): El nombre de la columna a la que se le aplicará la regla.
+            threshold (int, optional): La distancia máxima de Levenshtein. Por defecto 2.
+            arrays_to_explode (list[str], optional): Una lista de nombres de columnas a "aplanar"
+        Examples:
+        """
+        super().__init__(arrays_to_explode=arrays_to_explode)
+        self.col_name = col_name
+        self.threshold = threshold
+
+    def create_sql(self, sql_dialect: SplinkDialect) -> str:
+        return (
+            f"levenshtein(l.{self.col_name}, r.{self.col_name}) <= {self.threshold}"
+        )
+
+
 class _Merge(BlockingRuleCreator):
     _clause = ""
 
