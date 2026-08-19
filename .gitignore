@@ -1,0 +1,21 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+**/.ipynb_checkpoints/
+**/.jupyter/
+
+# PyCharm
+**/.idea/
+
+# Datos de exploración
+exploracion/data/*.csv
+!exploracion/data/.gitkeep
