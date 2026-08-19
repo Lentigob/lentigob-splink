@@ -98,9 +98,9 @@ documentación en línea. Estas instrucciones se deben de ejecutar de manera sep
 `/lentigo-splink/splink`. Lo anterior para poder explorar los scripts customizados de las reglas de agrupamiento y 
 comparación.
 
-### Funciones customizadas
+## Funciones customizadas
 
-## Reglas de agrupamiento
+### Reglas de agrupamiento
 
 En _SPlink_ las reglas de agrupamiento se ejecutan como SQL contra el backend elegido, por defecto DuckDB, así que 
 cualquier lógica personalizada en Python debe de traducirse en una condición SQL evaluable por el _Linker_ (ver 
