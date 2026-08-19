@@ -16,7 +16,7 @@
 # # Choosing blocking rules to optimise runtime
 #
 # <a target="_blank" href="https://colab.research.google.com/github/moj-analytical-services/splink/blob/master/docs/demos/tutorials/03_Blocking.ipynb">
-#   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+#   <z_img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 # </a>
 #
 # To link records, we need to compare pairs of records and decide which pairs are matches.

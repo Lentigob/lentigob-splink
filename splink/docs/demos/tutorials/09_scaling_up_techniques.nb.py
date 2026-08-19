@@ -16,7 +16,7 @@
 # # Scaling up to large datasets
 #
 # <a target="_blank" href="https://colab.research.google.com/github/moj-analytical-services/splink/blob/master/docs/demos/tutorials/09_scaling_up_techniques.ipynb">
-#   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+#   <z_img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 # </a>
 #
 # The previous tutorials showed how to build, estimate and use a linkage model. On small to medium sized data, the default settings 'just work' and you don't need to do anything special.

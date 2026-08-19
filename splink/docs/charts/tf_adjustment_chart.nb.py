@@ -42,7 +42,7 @@
 #
 #     #### Left chart
 #
-#     ![](./img/tf_adjustment_chart_tooltip_1.png)
+#     ![](./z_img/tf_adjustment_chart_tooltip_1.png)
 #
 #     The tooltip shows a number of statistics based on the column value of the point theat the user is hovering over, including:
 #
@@ -53,7 +53,7 @@
 #
 #     #### Right chart
 #
-#     ![](./img/tf_adjustment_chart_tooltip_2.png)
+#     ![](./z_img/tf_adjustment_chart_tooltip_2.png)
 #
 #     The tooltip shows a number of statistics based on the bar that the user is hovering over, including:
 #

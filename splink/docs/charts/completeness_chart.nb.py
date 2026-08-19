@@ -36,7 +36,7 @@
 # %% [markdown]
 # ??? note "What the chart tooltip shows"
 #
-#     ![](./img/completeness_chart_tooltip.png)
+#     ![](./z_img/completeness_chart_tooltip.png)
 #
 #     The tooltip shows a number of values based on the panel that the user is hovering over, including:
 #

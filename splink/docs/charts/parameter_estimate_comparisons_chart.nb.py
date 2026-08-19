@@ -34,12 +34,12 @@
 # [
 #     {
 #     "title": "`m u parameters chart`",
-#     "image": "./img/m_u_parameters_chart.png",
+#     "image": "./z_img/m_u_parameters_chart.png",
 #     "url": "./m_u_parameters_chart.ipynb"
 #     },
 #     {
 #     "title": "`match weights chart`",
-#     "image": "./img/match_weights_chart.png",
+#     "image": "./z_img/match_weights_chart.png",
 #     "url": "./match_weights_chart.ipynb"
 #     },
 # ]

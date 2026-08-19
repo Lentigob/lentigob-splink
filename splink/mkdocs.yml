@@ -23,8 +23,8 @@ theme:
     - navigation.tabs.sticky
     - navigation.top
     - toc.follow
-  logo: "img/favicon.ico"
-  favicon: "img/favicon.ico"
+  logo: "z_img/favicon.ico"
+  favicon: "z_img/favicon.ico"
   palette:
     - scheme: default
       primary: teal

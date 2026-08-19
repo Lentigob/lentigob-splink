@@ -42,7 +42,7 @@
 #
 #     #### Estimated m probability tooltip
 #
-#     ![](./img/m_u_parameters_chart_tooltip_1.png)
+#     ![](./z_img/m_u_parameters_chart_tooltip_1.png)
 #
 #     The tooltip of the left chart shows information based on the comparison level bar that the user is hovering over, including:
 #
@@ -54,7 +54,7 @@
 #
 #     #### Estimated u probability tooltip
 #
-#     ![](./img/m_u_parameters_chart_tooltip_2.png)
+#     ![](./z_img/m_u_parameters_chart_tooltip_2.png)
 #
 #     The tooltip of the right chart shows information based on the comparison level bar that the user is hovering over, including:
 #
@@ -91,12 +91,12 @@
 # [
 #     {
 #     "title": "`match weights chart`",
-#     "image": "./img/match_weights_chart.png",
+#     "image": "./z_img/match_weights_chart.png",
 #     "url": "./match_weights_chart.ipynb"
 #     },
 #     {
 #     "title": "`parameter estimate comparisons chart`",
-#     "image": "./img/parameter_estimate_comparisons_chart.png",
+#     "image": "./z_img/parameter_estimate_comparisons_chart.png",
 #     "url": "./parameter_estimate_comparisons_chart.ipynb"
 #     },
 # ]

@@ -35,7 +35,7 @@
 #
 # ??? note "What the chart tooltip shows"
 #
-#     ![](./img/match_weights_chart_tooltip.png)
+#     ![](./z_img/match_weights_chart_tooltip.png)
 #
 #     The tooltip shows information based on the comparison level bar that the user is hovering over, including:
 #
@@ -96,12 +96,12 @@
 # [
 #     {
 #     "title": "`m u parameters chart`",
-#     "image": "./img/m_u_parameters_chart.png",
+#     "image": "./z_img/m_u_parameters_chart.png",
 #     "url": "./m_u_parameters_chart.ipynb"
 #     },
 #     {
 #     "title": "`parameter estimate comparisons chart`",
-#     "image": "./img/parameter_estimate_comparisons_chart.png",
+#     "image": "./z_img/parameter_estimate_comparisons_chart.png",
 #     "url": "./parameter_estimate_comparisons_chart.ipynb"
 #     },
 # ]
