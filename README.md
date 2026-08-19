@@ -1,4 +1,4 @@
-# Lentigob Splink
+# Lentigob SPlink
 
 En este repositorio se pueden encontrar pruebas de exploración de la biblioteca de _linkeo_ o vinculación de registros 
 (_data linkeage_ ó _record linkeage_) [_SPlink_](https://github.com/moj-analytical-services/splink). Esta biblioteca es 
@@ -102,6 +102,47 @@ comparación.
 
 ## Reglas de agrupamiento
 
+En _SPlink_ las reglas de agrupamiento se ejecutan como SQL contra el backend elegido, por defecto DuckDB, así que 
+cualquier lógica personalizada en Python debe de traducirse en una condición SQL evaluable por el _Linker_ (ver 
+subsección _Uso de SPlink_). 
+
+Dentro de la ruta indicada en la organización del repositorio se agregó el script `blocking_rule_library_custom.py`. 
+Esto se hizo de manera paralela al script de la biblioteca original de reglas de agrupamiento `blocking_rule_library.py`.
+Allí se construyó primero una función base sencilla para quitar_acentos y que
+normaliza el texto eliminando diacríticos y conservando el caracter de la 
+ñ/Ñ antes de la normalización.
+
+A partir de esa función base se diseñaron dos modos de integración. El primero, el modo pandas, está implementado en
+`block_on_sin_acentos` y aplica la función `quitar_acentos` sobre toda la columna del _DataFrame_ de una sola vez 
+(vectorizado con `.apply`, `.str.upper()` y `.str.strip()`), de manera que se crea una columna nueva ya normalizada, y 
+regresa una regla de agrupamiento SQL simple que compara esa columna nueva entre los registros izquierdo y derecho 
+(¸l.columna_sin_acentos = r.columna_sin_acentos`). Este método es el más rápido de los dos propuestos, pues la 
+transformación ocurre una sola vez sobre todo el conjunto de datos antes de que SPlink construya los pares.
+
+El segundo modo, la [Función Definida por la Usuaria (FDU)](https://moj-analytical-services.github.io/splink/dev_guides/udfs.html),
+se define en `registrar_fdu_sin_acentos`. Aquí en lugar de transformar el _DataFrame_ de antemano, se registra 
+`quitar_acentos` directamente dentro de la conexión de _DuckDB_ con `con.create_function`,
+verificando primero que no exista ya una función con ese nombre para evitar conflictos. La regla de agrupamiento
+resultante llama a esa función fila por fila dentro del propio SQL (`UPPER(fdu(l.columna)) = UPPER(fdu(r.columna))`). 
+Este modo es más flexible porque no requiere modificar los datos antes, pero es más lenta ya que _DuckDB_ invoca a 
+Python por cada fila comparada, por lo que se recomienda usarse para conjuntos pequeños.
+
+Para no obligar a la usuaria a elegir manualmente entre importar una función u otra, se agrega
+`get_regla_bloqueo_sin_acentos` como punto de entrada único. Esta función recibe la columna y un parámetro para 
+seleccionar el modo ("pandas" o "fdu") y valida que se hayan pasado los argumentos necesarios para delegar a la función
+correspondiente.
+
+Se probó la integración adecuada con SPlink, que se muestra en el bloque `__main__`, donde se carga el dataset 
+`INER_COVID19_Pacientes_DiagnosticoComorbilidad.csv` a manera de ejemplo (se recuerda a la usuaria que no se incluyen 
+los datasets en el repositorio por temas de privacidad y seguridad y que si se requieren es necesario pedírselos al 
+personal del INER). En este bloque se genera un id único `unique_id`, y se prueba cada modo por separadose. Después se 
+usa la herramienta interna de SPlink para contar cuántos pares generaría la regla de agrupamiento personalizada con 
+`count_comparisons_from_blocking_rules`, y se ejecuta manualmente la unión SQL para verificar que
+los pares detectados sean los esperados antes de usar la regla dentro del `SettingsCreator` real de SPlink. Queda 
+pendiente en siguientes pasos eliminar este bloque y agregar las funciones definidas aquí al script original de 
+bibliotecas de reglas de agrupamiento.
+
+
 ## Anotaciones y Observaciones de _SPlink_
 
 Como parte del proyecto y dado que _SPlink_ es una biblioteca de código abierto desarrollada por personas del Reino 
@@ -137,7 +178,7 @@ _SQLite_.
 
 ### Uso de _SPlink_
 
-Splink provee de herramientas para el análisis exploratorio de datos que facilitarán la elección de reglas de 
+_SPlink_ provee de herramientas para el análisis exploratorio de datos que facilitarán la elección de reglas de 
 agrupamiento en el uso de la biblioteca. Provee la generación de una gráfica de completez del conjunto de datos o bien 
 una gráfica de la distribución de los valores en los datos.
 
@@ -201,6 +242,45 @@ para hacer los niveles de comparación de una fecha de nacimiento se puede usar 
 Estas funciones se pueden customizar y agregar nuevas de la misma manera en la que se hizo con las reglas de
 agrupamiento. Una vez elegidas las comparaciones y sus niveles, se puede especificar el diccionario de configuraciones 
 para después pasarlo al _Linker_. 
+
+## Conclusiones
+
+_SPlink_ permite modificar el código fuente y no tiene una lista única de reglas de agrupamiento ni de comparación que 
+al final se traducen en una condición SQL evaluable por el motor de base de datos a elegir por la usuaria. Lo anterior permite 
+resolver casos particulares del idioma español, como la normalización de acentos o la ñ, que las reglas predefinidas 
+no cubren. Además de poder agregar otro tipo de personalizaciones, no únicamente acerca del idioma. Esa flexibilidad 
+tiene sus desventajas. La biblioteca no revisa si la lógica personalizada que se escribió
+está bien construida ni si es eficiente, simplemente la ejecuta. Esto quiere decir que si una función de normalización
+tiene un error o si dos funciones registradas en el motor terminan con el mismo nombre, o si una regla está mal pensada 
+desde el enfoque probabilístico usado en SPlink. También de acuerdo a los dos modos definidos en la customización se 
+puede sacrificar velocidad por flexibilidd o visceversa.f
+
+Quizá sea recomendable que para personalizar _SPlink_ y seguir utilizando su código fuente de forma sostenible, 
+la persona desarrolladora debe mantener las funciones personalizadas desacopladas de la lógica interna de la biblioteca  
+y documentar qué modo de integración usa cada regla y por qué, verificar los resultados con
+consultas SQL manuales antes de confiar en las utilidades de conteo de _SPlink_, y cuidar los conflictos de nombres al
+registrar funciones en la conexión del motor, ya que estas persisten mientras la conexión esté abierta. Si además se
+trabaja sobre un fork del código fuente, como en este caso, es indispensable llevar control de los cambios respecto al
+repositorio original para poder actualizar la biblioteca sin perder las modificaciones propias ni romper compatibilidad,
+sobre todo cuando cambian versiones de dependencias como `sqlglot`, que se menciona aquí por ser una de las dependencias
+que presentaron conflictos al ejecutar el script customizado.
+
+En base a la documentación _SPlink_ destaca por no estar atada a un sólo motor de ejecución y por ofrecer un
+enfoque probabilístico fundamentado en el modelo Fellegi-Sunter en lugar de reglas puramente determinísticas, sin 
+embargo hay que tomar en cuenta que hay otros enfoques que pudieran ser más modernos y que si se quieren agregar de 
+manera personalizada a SPLink, tal vez no sea posible. Lo que puedo destacar es que SPlink separa claramente las etapas 
+del proceso (agrupamiento, comparación, estimación de parámetros y predicción), lo que
+facilita depurar cada parte por separado. Esto se puede tomar en cuenta para popder construir una infraestructura de
+una biblioteca de vinculación de registros desde cero y con un enfoque probabilístico distinto. 
+
+Como desventaja la curva de aprendizaje es bastante considerable cuando se necesita
+personalización más allá de lo predefinido ya que para poder mantener la lógica y calidad de las estimaciones se necesita
+conocer adecuadamente el enfoque probabilístico que usa la biblioteca. En resumen como una biblioteca independiente de 
+vinculación de registros funciona bastante bien, pero customizar la misma ya requiere de un nivel de experiencia y 
+dedicación mayores.
+
+
+
 
 
 
