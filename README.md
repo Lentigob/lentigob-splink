@@ -34,8 +34,6 @@ lentigob-splink/
         └── internals/
             ├── blocking_rule_library.py             # Script original de reglas de agrupamiento
             ├── blocking_rule_library_custom.py      # Script customizado de reglas de agrupamiento
-            ├── comparison_level_library.py          # Script original de reglas de comparación
-            └── comparison_level_library_custom.py   # Script customizado de reglas de comparación
 └── z_img                                            # Carpeta de imágenes que se muestran en el README.md
 └── README.md                                        # El presente archivo y documentación de este repositorio
 ```
@@ -99,15 +97,6 @@ apartado [_Getting Started_](https://moj-analytical-services.github.io/splink/ge
 documentación en línea. Estas instrucciones se deben de ejecutar de manera separada dentro de la ruta
 `/lentigo-splink/splink`. Lo anterior para poder explorar los scripts customizados de las reglas de agrupamiento y 
 comparación.
-
-### Funciones customizadas en _SPlink_
-
-#### Reglas de agrupamiento (_blocking_rule_)
-
-
-
-
-#### Reglas de comparación (_comparison_rule_)
 
 ## Anotaciones y Observaciones de _SPlink_
 
@@ -208,5 +197,3 @@ para hacer los niveles de comparación de una fecha de nacimiento se puede usar 
 Estas funciones se pueden customizar y agregar nuevas de la misma manera en la que se hizo con las reglas de
 agrupamiento.
 
-
-## Conclusiones
