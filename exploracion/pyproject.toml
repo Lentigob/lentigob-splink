@@ -1,0 +1,28 @@
+[project]
+name = "exploracion-splink"
+version = "0.1.0"
+description = "Ambiente de trabajo para record linkage / deduplicación con Splink"
+readme = "lentigob-splink/README.md"
+requires-python = ">=3.10,<3.11"
+
+dependencies = [
+    "splink==4.0.16",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.29.0",
+    "pandas>=2.0.0",
+    "duckdb>=0.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "pytest",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false
