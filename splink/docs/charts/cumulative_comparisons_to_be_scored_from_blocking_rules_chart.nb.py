@@ -38,7 +38,7 @@
 # %% [markdown]
 # ??? note "What the chart tooltip shows"
 #
-#     ![](./img/cumulative_num_comparisons_from_blocking_rules_chart_tooltip.png)
+#     ![](./z_img/cumulative_num_comparisons_from_blocking_rules_chart_tooltip.png)
 #
 #     The tooltip shows a number of statistics based on the bar that the user is hovering over, including:
 #

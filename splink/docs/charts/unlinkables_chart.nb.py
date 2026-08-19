@@ -35,7 +35,7 @@
 #
 # ??? note "What the chart tooltip shows"
 #
-#     ![](./img/unlinkables_chart_tooltip.png)
+#     ![](./z_img/unlinkables_chart_tooltip.png)
 #
 #     This tooltip shows a number of statistics based on the match weight of the selected point of the line, including:
 #

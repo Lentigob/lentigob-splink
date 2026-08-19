@@ -16,7 +16,7 @@
 # # Exploratory analysis
 #
 # <a target="_blank" href="https://colab.research.google.com/github/moj-analytical-services/splink/blob/master/docs/demos/tutorials/02_Exploratory_analysis.ipynb">
-#   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+#   <z_img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 # </a>
 #
 # Exploratory analysis helps you understand features of your data which are relevant linking or deduplicating your data.

@@ -16,7 +16,7 @@
 # # Visualising predictions
 #
 # <a target="_blank" href="https://colab.research.google.com/github/moj-analytical-services/splink/blob/master/docs/demos/tutorials/06_Visualising_predictions.ipynb">
-#   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+#   <z_img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 # </a>
 #
 # Splink contains a variety of tools to help you visualise your predictions.

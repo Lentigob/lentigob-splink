@@ -55,7 +55,7 @@ chart
 #
 #     ##### Left chart:
 #
-#     ![](./img/profile_columns_tooltip_1.png) 
+#     ![](./z_img/profile_columns_tooltip_1.png)
 #
 #     This tooltip shows a number of statistics based on the column value of the "step" that the user is hovering over, including:
 #
@@ -65,7 +65,7 @@ chart
 #
 #     ##### Middle and right chart:
 #
-#     ![](./img/profile_columns_tooltip_2.png)
+#     ![](./z_img/profile_columns_tooltip_2.png)
 #
 #     This tooltip shows a number of statistics based on the column value of the bar that the user is hovering over, including:
 #

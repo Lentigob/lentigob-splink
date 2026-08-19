@@ -16,7 +16,7 @@
 # # Specifying and estimating a linkage model
 #
 # <a target="_blank" href="https://colab.research.google.com/github/moj-analytical-services/splink/blob/master/docs/demos/tutorials/04_Estimating_model_parameters.ipynb">
-#   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+#   <z_img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 # </a>
 #
 # In the last tutorial we looked at how we can use blocking rules to generate pairwise record comparisons.

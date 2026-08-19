@@ -36,7 +36,7 @@
 #
 # ??? note "What the chart tooltip shows"
 #
-#     ![](./img/waterfall_chart_tooltip.png)
+#     ![](./z_img/waterfall_chart_tooltip.png)
 #
 #     The tooltip contains information based on the bar that the user is hovering over, including:
 #

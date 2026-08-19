@@ -16,7 +16,7 @@
 # # Predicting which records match
 #
 # <a target="_blank" href="https://colab.research.google.com/github/moj-analytical-services/splink/blob/master/docs/demos/tutorials/05_Predicting_results.ipynb">
-#   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+#   <z_img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 # </a>
 #
 # In the previous tutorial, we built and estimated a linkage model.
