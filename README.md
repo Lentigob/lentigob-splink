@@ -93,11 +93,17 @@ los conjuntos de datos usados para la exploración.
 
 **B. Para `splink`**
 
-#### Requerimientos
-
-#### Instalación
+Se debem de seguir las instrucciones de instalación de la propia biblioteca de _SPlink_ que se pueden encontrar en el 
+apartado [_Getting Started_](https://moj-analytical-services.github.io/splink/getting_started.html) de la 
+documentación en línea. Estas instrucciones se deben de ejecutar de manera separada dentro de la ruta
+`/lentigo-splink/splink`. Lo anterior para poder explorar los scripts customizados de las reglas de agrupamiento y 
+comparación.
 
 ### Funciones customizadas en _SPlink_
+
+#### Reglas de agrupamiento
+
+#### Reglas de comparación
 
 ## Breve resumen de _SPlink_
 
