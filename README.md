@@ -98,6 +98,10 @@ documentación en línea. Estas instrucciones se deben de ejecutar de manera sep
 `/lentigo-splink/splink`. Lo anterior para poder explorar los scripts customizados de las reglas de agrupamiento y 
 comparación.
 
+### Funciones customizadas
+
+## Reglas de agrupamiento
+
 ## Anotaciones y Observaciones de _SPlink_
 
 Como parte del proyecto y dado que _SPlink_ es una biblioteca de código abierto desarrollada por personas del Reino 
@@ -195,5 +199,8 @@ dentro de dos categorías, unas que son _fuzzy matching_ y otras muy específica
 para hacer los niveles de comparación de una fecha de nacimiento se puede usar `DateOfBirthComparison`.
 
 Estas funciones se pueden customizar y agregar nuevas de la misma manera en la que se hizo con las reglas de
-agrupamiento.
+agrupamiento. Una vez elegidas las comparaciones y sus niveles, se puede especificar el diccionario de configuraciones 
+para después pasarlo al _Linker_. 
+
+
 
