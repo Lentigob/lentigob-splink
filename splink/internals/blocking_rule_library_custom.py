@@ -96,7 +96,10 @@ def _normalizar_serie(serie):
 # Modo pandas
 # ---------------------------------------------------------------------
 
-def block_on_sin_acentos(df, columna):
+def block_on_sin_acentos(df,
+                         columna,
+                         vectorizador,
+                         clusterizador):
     """
     Crea una columna '{columna}_sin_acentos' en el DataFrame (normalizada:
     sin acentos, en mayúsculas, sin espacios extra) y regresa la regla de
@@ -114,10 +117,12 @@ def block_on_sin_acentos(df, columna):
     (df_transformado, regla_sql) : tuple[pd.DataFrame, str]
     """
     df = df.copy()
-    col_nueva = f"{columna}_sin_acentos"
-    df[col_nueva] = _normalizar_serie(df[columna])
-
-    regla_sql = f"l.{col_nueva} = r.{col_nueva}"
+    col_vectores = f"{columna}_vect"
+    vectorizador.fit(df[col_vectores])
+    df[col_vectores] = df.apply(vectorizador[columna])
+    clusters = clusterizador[columna] : pd.Series
+    df["cluster"] = clusters.assigment
+    regla_sql = "l.cluster = r.cluster"
     return df, regla_sql
 
 
